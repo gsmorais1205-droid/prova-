@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prova Online — Fundamentos (Python, Backend, Frontend e Banco de Dados)</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --card: #ffffff;
+      --ink: #111827;
+      --muted: #4b5563;
+      --border: #e5e7eb;
+      --accent: #2563eb;
+      --ok: #16a34a;
+      --warn: #d97706;
+      --bad: #dc2626;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 18px 14px 36px;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+
+    header {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .meta {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .rules {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .rules ul { margin: 0; padding-left: 18px; }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .topbar strong { color: var(--ink); }
+
+    .scorebox {
+      display: none;
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .scorebox.show { display: block; }
+
+    .scoreline { margin: 4px 0; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      margin-left: 6px;
+      color: var(--muted);
+    }
+
+    .badge.ok { border-color: rgba(22,163,74,.35); color: var(--ok); }
+    .badge.warn { border-color: rgba(217,119,6,.35); color: var(--warn); }
+    .badge.bad { border-color: rgba(220,38,38,.35); color: var(--bad); }
+
+    form {
+      margin-top: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .q {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+
+    .q-head {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .q-head strong { color: var(--ink); }
+
+    .q-body { padding: 12px; display: grid; gap: 10px; }
+
+    .explain {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      background: #fafafa;
+    }
+
+    .explain strong { color: var(--ink); }
+
+    pre {
+      margin: 10px 0 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    .diagram { margin-top: 10px; }
+
+    .svgbox {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .prompt {
+      margin: 0;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .choices { display: grid; gap: 8px; }
+
+    label.choice {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--ink);
+      font-size: 13px;
+      background: #ffffff;
+    }
+
+    label.choice:hover { border-color: #cbd5e1; }
+
+    input[type="radio"] { margin-top: 3px; accent-color: var(--accent); }
+
+    .feedback {
+      display: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      background: #ffffff;
+    }
+
+    .q.correct .feedback { display: block; border-color: rgba(22,163,74,.35); color: var(--ok); }
+    .q.wrong .feedback { display: block; border-color: rgba(220,38,38,.35); color: var(--bad); }
+    .q.missing .feedback { display: block; border-color: rgba(217,119,6,.35); color: var(--warn); }
+
+    .actions {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--accent);
+      color: white;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn.secondary { background: #ffffff; color: var(--ink); }
+
+    .hint { color: var(--muted); font-size: 12px; max-width: 560px; }
+
+    footer { margin-top: 14px; color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- Aviso para casos em que o arquivo é aberto em visualizadores que bloqueiam JavaScript (ex.: WhatsApp, Drive, Email preview) -->
+  <div id="browserNotice" style="display:none;padding:12px;border-bottom:1px solid #e5e7eb;background:#fff8e1;font-family:Arial,Helvetica,sans-serif;font-size:13px;">
+    ⚠️ Esta prova precisa ser aberta em um <strong>navegador</strong> para funcionar corretamente.
+    Alguns aplicativos (como o visualizador do WhatsApp) bloqueiam JavaScript e impedem a correção automática.
+    <button onclick="window.open(window.location.href, '_blank')" style="margin-left:10px;padding:6px 10px;border:1px solid #e5e7eb;background:#2563eb;color:white;border-radius:6px;cursor:pointer;">
+      Abrir no navegador
+    </button>
+  </div>
+  <div class="wrap">
+
+    <section class="panel" aria-labelledby="titulo-prova">
+      <header>
+        <div class="title">
+          <h1 id="titulo-prova">Prova Online — Programação (Python, Backend, Frontend e Banco de Dados)</h1>
+          <span class="badge">⏱️ 60 min</span>
+          <span class="badge">🧩 15 questões</span>
+          <span class="badge">🧠 Nível: básico → intermediário</span>
+        </div>
+        <div class="meta">
+          <div><strong>Instruções:</strong> cada questão tem um contexto (explicação + exemplos) e uma pergunta objetiva.</div>
+          <div><strong>Entrega:</strong> ao clicar em <strong>Terminei</strong>, a prova é corrigida e a nota aparece na tela.</div>
+        </div>
+      </header>
+
+      <div class="rules">
+        <ul>
+          <li>Marque apenas <strong>uma alternativa</strong> por questão.</li>
+          <li>Quando houver código, considere o comportamento padrão do Python 3.</li>
+          <li>Tempo recomendado por questão: ~4 minutos.</li>
+        </ul>
+      </div>
+
+      <div class="topbar">
+        <div class="timer" aria-live="polite">
+          ⏳ Tempo restante: <strong id="timer">60:00</strong>
+        </div>
+        <div class="timer" aria-live="polite">
+          📝 Respondidas: <strong id="answered">0</strong>/15
+        </div>
+      </div>
+
+      <div id="scorebox" class="scorebox" aria-live="polite">
+        <div class="scoregrid">
+          <div class="scoreline">✅ Acertos: <strong id="hits">0</strong>/15</div>
+          <div class="scoreline">📊 Nota (0–10): <strong id="grade">0,0</strong> <span id="gradeBadge" class="badge">—</span></div>
+          <div class="scoreline">⏱️ Tempo utilizado: <strong id="elapsed">0:00</strong></div>
+          <div class="scoreline">📌 Critério: cada questão vale <strong>1 ponto</strong> (nota = acertos/15 × 10).</div>
+        </div>
+      </div>
+    </section>
+
+    <form id="exam" novalidate>
+
+      <article class="q" id="q1" data-answer="C">
+        <div class="q-head"><strong>Questão 1</strong><span>Python • Imutabilidade</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Em Python, pense em <strong>mutabilidade</strong> como a possibilidade de alterar o conteúdo do mesmo objeto em memória.
+            Um jeito prático de investigar é tentar uma operação mínima e observar o erro (ou ausência dele).
+            <pre><code>texto = "abc"
+# texto[0] = "A"  # o que acontece?
+
+lista = ["a", "b", "c"]
+# lista[0] = "A"  # e aqui?</code></pre>
+            Se a operação não é suportada, o Python normalmente acusa isso com uma exceção clara.
+          </div>
+          <p class="prompt">Qual alternativa é verdadeira?</p>
+          <div class="choices" role="group" aria-label="Questão 1">
+            <label class="choice"><input type="radio" name="q1" value="A" /> A) É possível alterar texto[0] em uma string sem criar outra string.</label>
+            <label class="choice"><input type="radio" name="q1" value="B" /> B) Strings são mutáveis e listas são imutáveis.</label>
+            <label class="choice"><input type="radio" name="q1" value="C" /> C) Strings são imutáveis e listas são mutáveis.</label>
+            <label class="choice"><input type="radio" name="q1" value="D" /> D) Tanto string quanto lista são sempre imutáveis.</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q2" data-answer="B">
+        <div class="q-head"><strong>Questão 2</strong><span>Python • Escopo (LEGB)</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Para resolver questões de escopo, não “adivinhe”: <strong>localize onde o nome é atribuído</strong> e aplique LEGB (Local → Enclosing → Global → Built-in).
+            Atribuição dentro da função cria/usa o nome no escopo local, a menos que você declare <code>global</code>.
+            <pre><code>x = "global"
+
+def f():
+    x = "local"
+    return x
+
+print(f())
+print(x)</code></pre>
+          </div>
+          <p class="prompt">Qual valor será impresso na segunda linha (<code>print(x)</code>)?</p>
+          <div class="choices" role="group" aria-label="Questão 2">
+            <label class="choice"><input type="radio" name="q2" value="A" /> A) local</label>
+            <label class="choice"><input type="radio" name="q2" value="B" /> B) global</label>
+            <label class="choice"><input type="radio" name="q2" value="C" /> C) Built-in</label>
+            <label class="choice"><input type="radio" name="q2" value="D" /> D) NameError</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q3" data-answer="B">
+        <div class="q-head"><strong>Questão 3</strong><span>Python • Exceções</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Um bom “resolvedor” segue o fluxo do programa: o que executa no <code>try</code>, o que executa no <code>except</code>.
+            Se a conversão falha, o interpretador salta direto para o bloco de tratamento.
+            <pre><code>try:
+    n = int("10a")
+except ValueError:
+    n = 0
+
+print(n)</code></pre>
+          </div>
+          <p class="prompt">Qual será a saída?</p>
+          <div class="choices" role="group" aria-label="Questão 3">
+            <label class="choice"><input type="radio" name="q3" value="A" /> A) 10</label>
+            <label class="choice"><input type="radio" name="q3" value="B" /> B) 0</label>
+            <label class="choice"><input type="radio" name="q3" value="C" /> C) O programa quebra com ValueError</label>
+            <label class="choice"><input type="radio" name="q3" value="D" /> D) None</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q4" data-answer="A">
+        <div class="q-head"><strong>Questão 4</strong><span>Python • Comprehension</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Para não errar comprehension, separe mentalmente em dois passos:
+            <strong>1)</strong> filtrar pelo <code>if</code> → <strong>2)</strong> transformar com a expressão.
+            <pre><code>nums = [1, 2, 3, 4, 5, 6]
+pares_quadrado = [n*n for n in nums if n % 2 == 0]
+print(pares_quadrado)</code></pre>
+          </div>
+          <p class="prompt">Qual será a saída?</p>
+          <div class="choices" role="group" aria-label="Questão 4">
+            <label class="choice"><input type="radio" name="q4" value="A" /> A) [4, 16, 36]</label>
+            <label class="choice"><input type="radio" name="q4" value="B" /> B) [2, 4, 6]</label>
+            <label class="choice"><input type="radio" name="q4" value="C" /> C) [1, 4, 9, 16, 25, 36]</label>
+            <label class="choice"><input type="radio" name="q4" value="D" /> D) [4, 16]</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q5" data-answer="B">
+        <div class="q-head"><strong>Questão 5</strong><span>Python • dict.get</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Quando uma chave pode não existir, você escolhe entre:
+            <code>user["email"]</code> (explode com <code>KeyError</code>) vs <code>user.get("email", default)</code> (retorna um padrão).
+            <pre><code>user = {"nome": "Ana"}
+print(user.get("email", "(sem email)"))</code></pre>
+          </div>
+          <p class="prompt">Qual benefício de usar <code>get</code>?</p>
+          <div class="choices" role="group" aria-label="Questão 5">
+            <label class="choice"><input type="radio" name="q5" value="A" /> A) Sempre lança KeyError</label>
+            <label class="choice"><input type="radio" name="q5" value="B" /> B) Retorna um padrão quando não existe</label>
+            <label class="choice"><input type="radio" name="q5" value="C" /> C) Altera o dicionário automaticamente</label>
+            <label class="choice"><input type="radio" name="q5" value="D" /> D) Só funciona com chaves numéricas</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q6" data-answer="B">
+        <div class="q-head"><strong>Questão 6</strong><span>Backend • HTTP (REST)</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Em REST, o método HTTP expressa a intenção. Para criação, normalmente você envia um corpo para a coleção.
+            <pre><code>GET  /api/users/42  # leitura
+POST /api/users     # criação (em geral)</code></pre>
+          </div>
+          <p class="prompt">Qual método é mais adequado para criar um usuário?</p>
+          <div class="choices" role="group" aria-label="Questão 6">
+            <label class="choice"><input type="radio" name="q6" value="A" /> A) GET</label>
+            <label class="choice"><input type="radio" name="q6" value="B" /> B) POST</label>
+            <label class="choice"><input type="radio" name="q6" value="C" /> C) PUT</label>
+            <label class="choice"><input type="radio" name="q6" value="D" /> D) DELETE</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q7" data-answer="B">
+        <div class="q-head"><strong>Questão 7</strong><span>Backend • Status Code</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Status code é parte do contrato. Se um <strong>novo recurso</strong> foi criado, há um código específico para isso.
+            <pre><code>200 OK      # sucesso genérico
+201 Created # criado</code></pre>
+          </div>
+          <p class="prompt">Ao criar um recurso com sucesso, qual status é mais adequado?</p>
+          <div class="choices" role="group" aria-label="Questão 7">
+            <label class="choice"><input type="radio" name="q7" value="A" /> A) 200</label>
+            <label class="choice"><input type="radio" name="q7" value="B" /> B) 201</label>
+            <label class="choice"><input type="radio" name="q7" value="C" /> C) 404</label>
+            <label class="choice"><input type="radio" name="q7" value="D" /> D) 500</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q8" data-answer="C">
+        <div class="q-head"><strong>Questão 8</strong><span>Banco • PK/FK</span></div>
+        <div class="q-body">
+          <div class="explain">
+            FK é o “ponteiro” para a PK de outra tabela. Em relacionamentos 1→N, a FK costuma ficar no lado N.
+            <pre><code>clientes(id PK)
+pedidos(id PK, cliente_id FK)</code></pre>
+          </div>
+          <p class="prompt">Qual coluna em <em>pedidos</em> é a Foreign Key?</p>
+          <div class="choices" role="group" aria-label="Questão 8">
+            <label class="choice"><input type="radio" name="q8" value="A" /> A) pedidos.id</label>
+            <label class="choice"><input type="radio" name="q8" value="B" /> B) clientes.id</label>
+            <label class="choice"><input type="radio" name="q8" value="C" /> C) pedidos.cliente_id</label>
+            <label class="choice"><input type="radio" name="q8" value="D" /> D) clientes.nome</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q9" data-answer="C">
+        <div class="q-head"><strong>Questão 9</strong><span>Banco • JOIN</span></div>
+        <div class="q-body">
+          <div class="explain">
+            INNER JOIN retorna apenas linhas que têm correspondência em ambas as tabelas (interseção).
+            <pre><code>SELECT c.nome, p.id
+FROM clientes c
+JOIN pedidos p ON p.cliente_id = c.id;</code></pre>
+          </div>
+          <p class="prompt">Qual JOIN retorna somente registros existentes nas duas tabelas?</p>
+          <div class="choices" role="group" aria-label="Questão 9">
+            <label class="choice"><input type="radio" name="q9" value="A" /> A) LEFT JOIN</label>
+            <label class="choice"><input type="radio" name="q9" value="B" /> B) RIGHT JOIN</label>
+            <label class="choice"><input type="radio" name="q9" value="C" /> C) INNER JOIN</label>
+            <label class="choice"><input type="radio" name="q9" value="D" /> D) CROSS JOIN</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q10" data-answer="A">
+        <div class="q-head"><strong>Questão 10</strong><span>Banco • Índices</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Se uma consulta filtra por igualdade em coluna muito usada, um índice nessa coluna costuma evitar varredura completa.
+            <pre><code>SELECT * FROM usuarios WHERE email = 'ana@email.com';</code></pre>
+            Em investigação real, você confirmaria via <code>EXPLAIN</code>.
+          </div>
+          <p class="prompt">Qual melhoria tende a aumentar a performance dessa consulta?</p>
+          <div class="choices" role="group" aria-label="Questão 10">
+            <label class="choice"><input type="radio" name="q10" value="A" /> A) Criar índice em usuarios.email</label>
+            <label class="choice"><input type="radio" name="q10" value="B" /> B) Remover a coluna email</label>
+            <label class="choice"><input type="radio" name="q10" value="C" /> C) Trocar SELECT por INSERT</label>
+            <label class="choice"><input type="radio" name="q10" value="D" /> D) Desligar o cache</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q11" data-answer="C">
+        <div class="q-head"><strong>Questão 11</strong><span>Backend • SQL Injection</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Concatenar SQL com input mistura dados e comando. A defesa padrão é parametrização/prepared statement.
+            <pre><code># ruim
+"... WHERE email='" + email + "'"
+
+# bom (conceito)
+"... WHERE email=?"  + [email]</code></pre>
+          </div>
+          <p class="prompt">Qual prática é a mais indicada para evitar SQL Injection?</p>
+          <div class="choices" role="group" aria-label="Questão 11">
+            <label class="choice"><input type="radio" name="q11" value="A" /> A) Remover aspas manualmente</label>
+            <label class="choice"><input type="radio" name="q11" value="B" /> B) Validar apenas no frontend</label>
+            <label class="choice"><input type="radio" name="q11" value="C" /> C) Usar queries parametrizadas/prepared statements</label>
+            <label class="choice"><input type="radio" name="q11" value="D" /> D) Converter tudo para maiúsculo</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q12" data-answer="C">
+        <div class="q-head"><strong>Questão 12</strong><span>Python • JSON</span></div>
+        <div class="q-body">
+          <div class="explain">
+            <code>json.dumps</code> “despeja” uma estrutura para JSON em <strong>texto</strong>. <code>json.loads</code> faz o inverso.
+            <pre><code>import json
+payload = {"id": 1, "nome": "Ana"}
+out = json.dumps(payload)
+# type(out) == ?</code></pre>
+          </div>
+          <p class="prompt">Qual é o tipo do retorno de <code>json.dumps(payload)</code>?</p>
+          <div class="choices" role="group" aria-label="Questão 12">
+            <label class="choice"><input type="radio" name="q12" value="A" /> A) dict</label>
+            <label class="choice"><input type="radio" name="q12" value="B" /> B) list</label>
+            <label class="choice"><input type="radio" name="q12" value="C" /> C) str</label>
+            <label class="choice"><input type="radio" name="q12" value="D" /> D) bytes</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q13" data-answer="C">
+        <div class="q-head"><strong>Questão 13</strong><span>Frontend • Semântica</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Em formulários, escolha o elemento com comportamento nativo correto (teclado/acessibilidade/submit).
+            <pre><code>&lt;button type="submit"&gt;Enviar&lt;/button&gt;</code></pre>
+          </div>
+          <p class="prompt">Qual elemento é semanticamente correto para ação “Enviar”?</p>
+          <div class="choices" role="group" aria-label="Questão 13">
+            <label class="choice"><input type="radio" name="q13" value="A" /> A) &lt;div&gt;Enviar&lt;/div&gt;</label>
+            <label class="choice"><input type="radio" name="q13" value="B" /> B) &lt;span&gt;Enviar&lt;/span&gt;</label>
+            <label class="choice"><input type="radio" name="q13" value="C" /> C) &lt;button type="submit"&gt;Enviar&lt;/button&gt;</label>
+            <label class="choice"><input type="radio" name="q13" value="D" /> D) &lt;label&gt;Enviar&lt;/label&gt;</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q14" data-answer="A">
+        <div class="q-head"><strong>Questão 14</strong><span>Frontend • Box model</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Se você quer que <code>width</code> inclua padding e border, ajuste o cálculo via <code>box-sizing</code>.
+            Em times, é comum padronizar isso globalmente.
+            <pre><code>* { box-sizing: border-box; }</code></pre>
+          </div>
+          <p class="prompt">Qual propriedade faz com que <code>width</code> inclua padding e border?</p>
+          <div class="choices" role="group" aria-label="Questão 14">
+            <label class="choice"><input type="radio" name="q14" value="A" /> A) box-sizing: border-box</label>
+            <label class="choice"><input type="radio" name="q14" value="B" /> B) display: block</label>
+            <label class="choice"><input type="radio" name="q14" value="C" /> C) position: relative</label>
+            <label class="choice"><input type="radio" name="q14" value="D" /> D) overflow: hidden</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <article class="q" id="q15" data-answer="B">
+        <div class="q-head"><strong>Questão 15</strong><span>Arquitetura • Camadas</span></div>
+        <div class="q-body">
+          <div class="explain">
+            Validação de negócio não pode depender do cliente. O backend valida e o banco pode reforçar (ex.: <code>UNIQUE</code>).
+            Frontend valida formato/UX, mas não é fronteira de segurança.
+          </div>
+          <p class="prompt">Onde normalmente ficam validações de regra de negócio (ex.: “email único”)?</p>
+          <div class="choices" role="group" aria-label="Questão 15">
+            <label class="choice"><input type="radio" name="q15" value="A" /> A) Apenas no Frontend</label>
+            <label class="choice"><input type="radio" name="q15" value="B" /> B) Backend (e reforçado pelo Banco quando possível)</label>
+            <label class="choice"><input type="radio" name="q15" value="C" /> C) Apenas no CSS</label>
+            <label class="choice"><input type="radio" name="q15" value="D" /> D) Apenas no HTML</label>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </article>
+
+      <div class="actions">
+        <div>
+          <button class="btn" type="submit">Terminei</button>
+          <button class="btn secondary" id="resetBtn" type="button">Reiniciar</button>
+        </div>
+        <div class="hint">Ao clicar em <strong>Terminei</strong>, a prova será corrigida e a nota aparecerá no topo.</div>
+      </div>
+
+    </form>
+
+    <footer>
+      © Prova gerada para avaliação de fundamentos (Python, Backend, Frontend e Banco de Dados). Ajuste livremente os textos/questões.
+    </footer>
+
+  </div>
+
+  <script>
+    (function () {
+      const TOTAL = 15;
+      const DURATION_SECONDS = 60 * 60; // 60 min
+
+      const exam = document.getElementById('exam');
+      const timerEl = document.getElementById('timer');
+      const answeredEl = document.getElementById('answered');
+      const scorebox = document.getElementById('scorebox');
+      const hitsEl = document.getElementById('hits');
+      const gradeEl = document.getElementById('grade');
+      const gradeBadge = document.getElementById('gradeBadge');
+      const elapsedEl = document.getElementById('elapsed');
+      const resetBtn = document.getElementById('resetBtn');
+
+      const startTs = Date.now();
+      let remaining = DURATION_SECONDS;
+      let interval = null;
+      let finalized = false;
+
+      function pad(n) { return String(n).padStart(2, '0'); }
+
+      function formatMMSS(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${pad(s)}`;
+      }
+
+      function formatHMMSS(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const rest = seconds % 3600;
+        const m = Math.floor(rest / 60);
+        const s = rest % 60;
+        return `${h}:${pad(m)}:${pad(s)}`;
+      }
+
+      function updateAnsweredCount() {
+        const qs = Array.from(document.querySelectorAll('.q'));
+        const answered = qs.reduce((acc, q) => {
+          const name = q.id;
+          const marked = document.querySelector(`input[name="${name}"]:checked`);
+          return acc + (marked ? 1 : 0);
+        }, 0);
+        answeredEl.textContent = String(answered);
+      }
+
+      function setGradeBadge(grade10) {
+        gradeBadge.classList.remove('ok', 'warn', 'bad');
+        if (grade10 >= 7) {
+          gradeBadge.classList.add('ok');
+          gradeBadge.textContent = 'Aprovado';
+        } else if (grade10 >= 5) {
+          gradeBadge.classList.add('warn');
+          gradeBadge.textContent = 'Recuperação';
+        } else {
+          gradeBadge.classList.add('bad');
+          gradeBadge.textContent = 'Reprovado';
+        }
+      }
+
+      function lockForm() {
+        const inputs = document.querySelectorAll('input[type="radio"]');
+        inputs.forEach(i => (i.disabled = true));
+      }
+
+      function unlockForm() {
+        const inputs = document.querySelectorAll('input[type="radio"]');
+        inputs.forEach(i => (i.disabled = false));
+      }
+
+      function clearFeedback() {
+        const qs = document.querySelectorAll('.q');
+        qs.forEach(q => {
+          q.classList.remove('correct', 'wrong', 'missing');
+          const fb = q.querySelector('.feedback');
+          if (fb) fb.textContent = '';
+        });
+      }
+
+      function gradeExam() {
+        const qs = Array.from(document.querySelectorAll('.q'));
+        let hits = 0;
+
+        qs.forEach(q => {
+          const correct = (q.getAttribute('data-answer') || '').trim().toUpperCase();
+          const name = q.id;
+          const marked = document.querySelector(`input[name="${name}"]:checked`);
+          const fb = q.querySelector('.feedback');
+
+          q.classList.remove('correct', 'wrong', 'missing');
+
+          if (!marked) {
+            q.classList.add('missing');
+            if (fb) fb.textContent = `⚠️ Não respondida. Resposta correta: ${correct}.`;
+            return;
+          }
+
+          const chosen = (marked.value || '').toUpperCase();
+          if (chosen === correct) {
+            hits += 1;
+            q.classList.add('correct');
+            if (fb) fb.textContent = `✅ Correto. Você marcou: ${chosen}.`;
+          } else {
+            q.classList.add('wrong');
+            if (fb) fb.textContent = `❌ Incorreto. Você marcou: ${chosen}. Correto: ${correct}.`;
+          }
+        });
+
+        const grade10 = (hits / TOTAL) * 10;
+        const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startTs) / 1000));
+
+        hitsEl.textContent = String(hits);
+        gradeEl.textContent = grade10.toFixed(1).replace('.', ',');
+        elapsedEl.textContent = formatHMMSS(elapsedSeconds);
+        setGradeBadge(grade10);
+
+        scorebox.classList.add('show');
+
+        return { hits, grade10 };
+      }
+
+      function tick() {
+        if (finalized) return;
+        remaining = Math.max(0, remaining - 1);
+        timerEl.textContent = formatMMSS(remaining);
+        if (remaining === 0) {
+          finalize('⏱️ Tempo esgotado. Prova corrigida automaticamente.');
+        }
+      }
+
+      function finalize(reason) {
+        if (finalized) return;
+        finalized = true;
+        if (interval) clearInterval(interval);
+
+        const res = gradeExam();
+        lockForm();
+
+        // Mostra um resumo no topo (badge)
+        const summary = document.createElement('div');
+        summary.className = 'rules';
+        summary.style.borderTop = 'none';
+        summary.innerHTML = `<div class="scoreline"><strong>${reason}</strong> • Acertos: <strong>${res.hits}</strong>/${TOTAL} • Nota: <strong>${res.grade10.toFixed(1).replace('.', ',')}</strong></div>`;
+
+        // Inserir acima do formulário
+        exam.parentNode.insertBefore(summary, exam);
+
+        // Scroll suave para o topo para ver a nota
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Evitar duplicar resumos em reinícios
+        resetBtn.dataset.summaryInserted = '1';
+      }
+
+      // Timer
+      timerEl.textContent = formatMMSS(remaining);
+      interval = setInterval(tick, 1000);
+
+      // Contador de respondidas
+      exam.addEventListener('change', function () {
+        updateAnsweredCount();
+      });
+      updateAnsweredCount();
+
+      // Submit = Terminei
+      exam.addEventListener('submit', function (e) {
+        e.preventDefault();
+        finalize('📌 Prova finalizada pelo candidato.');
+      });
+
+      // Reset
+      resetBtn.addEventListener('click', function () {
+        finalized = false;
+        remaining = DURATION_SECONDS;
+        timerEl.textContent = formatMMSS(remaining);
+        scorebox.classList.remove('show');
+        hitsEl.textContent = '0';
+        gradeEl.textContent = '0,0';
+        gradeBadge.className = 'badge';
+        gradeBadge.textContent = '—';
+        elapsedEl.textContent = '0:00';
+
+        // Limpar inputs
+        const checked = document.querySelectorAll('input[type="radio"]:checked');
+        checked.forEach(i => (i.checked = false));
+
+        clearFeedback();
+        unlockForm();
+        updateAnsweredCount();
+
+        // Remover resumos extras (se existirem)
+        const rulesBlocks = Array.from(document.querySelectorAll('.wrap > .rules'));
+        // O primeiro .rules é o de instruções dentro do panel; os extras são inseridos como irmãos do form.
+        rulesBlocks.forEach(rb => {
+          // Mantém apenas o bloco de instruções original dentro do panel
+          if (!rb.closest('.panel')) rb.remove();
+        });
+
+        // Reiniciar timer
+        if (interval) clearInterval(interval);
+        interval = setInterval(tick, 1000);
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    })();
+  </script>
+</body>
+</html>
